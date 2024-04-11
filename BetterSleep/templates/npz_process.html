@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preprocessed Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(0deg, rgba(8,7,16,1) 0%, rgba(122,144,144,1) 46%, rgba(250,251,251,1) 100%);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 100px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* Gradient background */
+            background: linear-gradient(0deg,rgba(255,255,255,1) 0%, rgba(122,144,144,1) 46%, rgb(10, 22, 27) 100%);
+        }
+        
+        h1 {
+            color: #fefefe;
+            text-align: center;
+        }
+        
+        p {
+            color: #1b1919;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        button {
+            background-color:  rgb(4,25,25);
+            border: none;
+            color: rgb(255, 255, 255);
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0; /* Add margin between buttons */
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        button:hover {
+            background-color:  rgb(20, 75, 97); /* Slightly darker background color on hover */
+        }
+        .preprocessed {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(249, 249, 249, 0.4); /* rgba(249, 249, 249, 0.9) for a slightly transparent white background */
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            overflow-x: auto;
+        }
+
+        .preprocessed p {
+            margin: 0;
+            font-family: "Courier New", Courier, monospace;
+            white-space: pre-wrap;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EEG Preprocessed Data</h1>
+        <p class="preprocessed">     
+               {{ x_values_first_10 }}...
+        </p>
+        
+        <!-- Button container with centered alignment -->
+        <div class="button-container">
+            <!-- Button to choose a model -->
+            <button onclick="redirectToModelSelection()">Choose a Model</button>
+            
+            <!-- Button to go back to the previous page -->
+            <button onclick="goBack()">Go Back</button>
+        </div>
+    </div>
+    
+    <!-- JavaScript function to handle button click and redirect to model_selection.html -->
+    <script>
+        function redirectToModelSelection() {
+            // Redirect to model_selection.html with npz_filename as query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const npzFilename = urlParams.get('npz_filename');
+            window.location.href = "model_selection.html?npz_filename=" + npzFilename;
+        }
+
+        // Function to go back to the previous page
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

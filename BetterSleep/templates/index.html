@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetterSleep</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="fade-in">
+    <div class="container">
+        <div class="left-section">
+            <div class="header">
+                <h2 class="heading-text">BetterSleep</h2>
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Logo">
+                </div>
+            </div>
+            <div class="heading">
+                <h2>SLEEP BETTER,</h2>
+                <h1>LIVE BETTER</h1>
+                <!--<p class="description">BetterSleep is a sleep stage classification tool that helps in identifying a person's sleep disorders by classifying sleep stages for every 30 seconds.</p>-->
+                <button class="button" onclick="redirectToSelectedPage()">Get Started</button>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="slideshow-container">
+                <div class="mySlides fade">
+                    <img src="{{ url_for('static', filename='images/back.jpg') }}" style="width:100%">
+                    <div class="overlay"></div>
+                </div>
+                <div class="mySlides fade">
+                    <img src="{{ url_for('static', filename='images/back2.jpg') }}" style="width:100%">
+                    <div class="overlay"></div>
+                </div>
+                <div class="mySlides fade">
+                    <img src="{{ url_for('static', filename='images/back3.jpg') }}" style="width:100%">
+                    <div class="overlay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for slideshow -->
+    <script>
+        var slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            var i;
+            var slides = document.getElementsByClassName("mySlides");
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            slides[slideIndex-1].style.display = "block";  
+            setTimeout(showSlides, 3000); // Change image every 3 seconds (increased from 2 seconds)
+        }
+
+        // Function to redirect to selected page
+        function redirectToSelectedPage() {
+            window.location.href = "selectedf.html";
+        }
+    </script>
+</body>
+</html>

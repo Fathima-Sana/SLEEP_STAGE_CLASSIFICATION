@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Chart</title>
+    <script src="{{ url_for('static', filename='chart.js') }}"></script>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(40, 49, 105);
+        }
+        #chart-container {
+            width: 800px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color:aliceblue">Sleep Analysis Chart</h1> <!-- Heading -->
+    <div style="width: 800px; height: 400px; background-color: rgb(40, 49, 105); padding: 20px;" id="chart-container">
+        <canvas id="sleepChart"></canvas>
+    </div>
+
+    <script>
+        
+        // Array of sleep labels
+const sleepLabels = ['Wake', 'N1', 'N2', 'N3', 'REMs'];
+const sleepData = ['0','0','0','1','1','1','2','3','4','4','3','3','2','1','0','0']
+const sleepLabelColors = ['rgb(35, 58, 105)', 'rgb(82, 108, 163)', 'rgb(56, 83, 140)', 'rgb(75, 192, 192)', 'rgb(153, 102, 255)'];
+
+// Calculate time labels for x-axis (30-second intervals)
+const timeLabels = [];
+for (let i = 0; i < sleepData.length; i++) {
+    const totalMinutes = i * 30 / 60; // Convert seconds to minutes
+    const hours = Math.floor(totalMinutes / 60); // Calculate hours
+    const minutes = Math.floor(totalMinutes % 60); // Calculate remaining minutes
+    const timeLabel = `${hours > 0 ? hours + "h" : ""}${minutes}m`;
+    timeLabels.push(timeLabel);
+}
+
+// Create a new Chart instance
+const ctx = document.getElementById('sleepChart').getContext('2d');
+const gradient = ctx.createLinearGradient(0, 0, 0, 700);
+gradient.addColorStop(0, 'rgba(212, 95, 130)'); // Start color (transparent white)
+gradient.addColorStop(1, 'rgba(81, 22, 97)'); // End color (light gray)
+
+const sleepChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: timeLabels,
+        datasets: [{
+            label: 'Sleep Labels',
+            data: sleepData,
+            borderColor: 'rgb(255, 255, 255)', // Change color to white
+            backgroundColor: gradient, // Gradient background color
+            borderWidth: 3, // Thickness of the line
+            pointStyle: 'line', // Render points as lines
+            pointRadius: 0 // Hide points
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                grid: {
+                    display: false // Hide x-axis gridlines
+                },
+                ticks: {
+                    font: {
+                        size: 12, // Adjust font size
+                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif" // Font family
+                    }
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(10, 8, 33)', // Color of the y-axis gridlines
+                    borderDash: [5], // Dashed lines for grid
+                    drawBorder: false // Hide y-axis border
+                },
+                ticks: {
+                    color: 'rgba(255, 255, 255)', // Color of y-axis labels
+                    font: {
+                        size: 12, // Adjust font size
+                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif" // Font family
+                    },
+                    callback: function(value, index, values) {
+                        return sleepLabels[value];
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false // Hide legend
+            }
+        }
+    }
+});
+window.history.pushState({}, null, 'result.html');
+
+    </script>
+</body>
+</html>

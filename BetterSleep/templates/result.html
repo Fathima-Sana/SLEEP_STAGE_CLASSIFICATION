@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Adjust to column layout */
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(4, 25, 25);
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            color: aliceblue;
+            margin-top: 60px; /* Add margin at the top */
+        }
+        #chart-wrapper {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px; /* Set a max-width to prevent the chart from occupying too much space */
+            margin-bottom: 20px; /* Add margin at the bottom */
+        }
+        #chart-container {
+            width: calc(100% - 10px); /* Adjust width of the chart container */
+            height: 400px;
+            background-color: rgb(4, 25, 25);
+            border-radius: 10px;
+            padding: 20px; /* Add padding to create space for the label */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* Add position relative for absolute positioning */
+        }
+        #percentage-container {
+            margin-top: 50px;
+            width: calc(40% - 50px); /* Adjust width of the percentage container */
+            background-color: rgba(252, 252, 252, 0.8);
+            border-radius: 10px;
+            padding: 10px; /* Add padding to the percentage container */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #sleep-status {
+            color: white;
+            font-size: 24px;
+
+            text-align: center; /* Center align the sleep status */
+        }
+        button {
+            background-color: rgb(17, 62, 62);
+            border: none;
+            color: rgb(255, 255, 255);
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px 0; /* Add margin at the top and bottom */
+            cursor: pointer;
+            border-radius: 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        button:hover {
+            background-color: rgba(34,70,70,255); /* Slightly darker background color on hover */
+        }
+    </style>
+</head>
+<body>
+    <h1>Sleep Analysis Chart</h1> <!-- Heading -->
+    <div id="chart-wrapper">
+        <div id="chart-container">
+            <canvas id="sleepChart" width="1200" height="900"></canvas>
+        </div>
+        <div id="percentage-container">
+            <div class="percentage-label" id="percentageLabel">
+                <!-- Each label will be styled with the CSS defined above -->
+            </div> <!-- Move percentage label inside chart container -->
+        </div>
+    </div>
+    <div id="sleep-status"></div> <!-- Element to display sleep status -->
+    <button onclick="goBack()">Choose Another Model</button> <!-- "Go Back" button below the chart -->
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+        // Array of sleep labels
+        const sleepLabels = ['Wake', 'N1', 'N2', 'N3', 'REM'];
+
+        // Retrieve predicted sleep stages from URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const predictedSleepStagesParam = urlParams.get('predicted_sleep_stages');
+
+        // Check if the predicted sleep stages parameter is not null
+        if (predictedSleepStagesParam !== null) {
+            // Split the string into an array of strings
+            const predictedSleepStagesArray = predictedSleepStagesParam.split(',');
+
+            // Convert array of strings to array of integers
+            const sleepData = predictedSleepStagesArray.map(stage => parseInt(stage));
+
+            // Calculate time labels for x-axis (30-second intervals)
+            const timeLabels = [];
+            for (let i = 0; i < sleepData.length; i++) {
+                const totalMinutes = i * 30 / 60; // Convert seconds to minutes
+                const hours = Math.floor(totalMinutes / 60); // Calculate hours
+                const minutes = Math.floor(totalMinutes % 60); // Calculate remaining minutes
+                const timeLabel = `${hours > 0 ? hours + "h" : ""}${minutes}m`;
+                timeLabels.push(timeLabel);
+            }
+
+            // Create a new Chart instance
+            const ctx = document.getElementById('sleepChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 700);
+            gradient.addColorStop(0, 'rgba(212, 95, 130)'); // Start color (transparent white)
+            gradient.addColorStop(1, 'rgba(81, 22, 97)'); // End color (light gray)
+
+            const sleepChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'Sleep Labels',
+                        data: sleepData,
+                        borderColor: 'rgb(255, 255, 255)', // Change color to white
+                        backgroundColor: gradient, // Gradient background color
+                        borderWidth: 3, // Thickness of the line
+                        pointStyle: 'line', // Render points as lines
+                        pointRadius: 0 // Hide points
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false // Hide x-axis gridlines
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12, // Adjust font size
+                                    family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif" // Font family
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(10, 8, 33)', // Color of the y-axis gridlines
+                                borderDash: [5], // Dashed lines for grid
+                                drawBorder: false // Hide y-axis border
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255)', // Color of y-axis labels
+                                font: {
+                                    size: 12, // Adjust font size
+                                    family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif" // Font family
+                                },
+                                callback: function(value, index, values) {
+                                    return sleepLabels[value];
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // Hide legend
+                        }
+                    }
+                }
+            });
+
+            // Calculate total sleep time
+            const totalSleepTime = sleepData.length * 30; // Total seconds
+
+            // Display time spent in each stage beside the chart
+            const percentageLabel = document.getElementById('percentageLabel');
+            const actualPercentages = []; // Array to store percentages
+            sleepLabels.forEach((label, index) => {
+                const timeSpent = sleepData.filter(stage => stage === index).length * 30; // Time in seconds
+                const hours = Math.floor(timeSpent / 3600); // Calculate hours
+                const minutes = Math.floor((timeSpent % 3600) / 60); // Calculate minutes
+                const timeFormat = `${hours > 0 ? hours + "h" : ""}${minutes}m`;
+                const percentage = ((timeSpent / totalSleepTime) * 100).toFixed(2);
+                actualPercentages.push(parseFloat(percentage)); // Store percentage in array
+                const percentageText = `<span>${label}:</span><span class="percentage-value">${timeFormat} (${percentage}%)</span><br>`;
+                percentageLabel.innerHTML += percentageText;
+            });
+
+            // Determine sleep status based on percentages
+            const idealPercentages = [10, 5, 40, 20, 25]; 
+            const status = getStatus(idealPercentages, actualPercentages);
+
+            // Display sleep status on the webpage
+            const sleepStatusElement = document.getElementById('sleep-status');
+            sleepStatusElement.innerText = "YOUR SLEEP IS " + status;
+
+        } else {
+            // Handle the case where the predicted sleep stages parameter is null
+            console.log("Predicted sleep stages data is null.");
+            // Optionally, you could display a message to the user indicating that there is no data available.
+        }
+
+        function getStatus(ideal, actual) {
+            const diffs = actual.map((val, index) => Math.abs(ideal[index] - val));
+            const totalDiff = diffs.reduce((acc, curr) => acc + curr, 0);
+            const averageDiff = totalDiff / diffs.length;
+            console.log(averageDiff)
+            if (averageDiff < 5) return "EXCELLENT";
+            else if (averageDiff < 10) return "VERY GOOD";
+            else if (averageDiff < 15) return "GOOD";
+            else if (averageDiff < 20) return "SATISFACTORY";
+            else return "BAD";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload EDF File</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,300" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(0deg, rgba(250,251,251,1) 0%, rgba(122,144,144,1) 46%, rgba(8,7,16,1) 100%);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh; /* Ensure the body covers the entire viewport */
+        }
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 40px; /* Increased padding for more space */
+            border-radius: 500px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 90%; /* Adjusted width to make it a little bigger */
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden; /* Ensure the gradient doesn't overflow */
+            background: rgba(255, 255, 255, 0.8); /* Fallback background color */
+        }
+
+        /* Gradient style for inner element */
+        .gradient-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, rgba(44,50,52,1) 0%, rgba(122,144,144,1) 46%, rgba(255,255,255,1) 100%);
+            z-index: -1; 
+        }
+
+        .classifier-heading {
+            margin-top: 0px; /* Adjust the margin as needed */
+            font-size: 40px; /* Adjust the font size as needed */
+            font-weight: bold; /* Optionally, make it bold */
+            color: #333; /* Adjust the color as needed */
+            text-align: center; /* Center the heading */
+        }
+
+        .logo {
+            position: relative;
+            top: -30px; /* Adjust the top value as needed to move the logo up */
+            text-align: center; /* Center the logo horizontally */
+        }
+
+        .logo img {
+            width: 100px; /* Adjust the width of the logo */
+            height: auto;
+        }
+
+        .form {
+            width: 300px;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            width: 97%;
+            height: 60px;
+            background: rgba(34, 70, 70, 255);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .file-upload-field {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .upload-button {
+            width: 110%; /* Adjust the width as needed */
+            height: 40px;
+            background: rgb(4,25,25);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .preprocess-button {
+            width: 110%;
+            height: 40px;
+            background: rgb(4,25,25);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px; /* Adjust margin-top as needed */
+        }
+
+        #previous-button {
+            width: 110%;
+            height: 40px;
+            background: rgb(4,25,25);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px; /* Adjust margin-top as needed */
+        }
+
+        #file-error {
+            color: red;
+            display: none;
+        }
+
+        #format-error {
+            color: red;
+            display: none;
+        }
+
+        /* Toast message styles */
+        .toast-message {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+
+        .toast-message.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body class="fade-in">
+    <div class="container">
+        <!-- Gradient background -->
+        <div class="gradient-background"></div> 
+        <!-- Logo -->
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Logo">
+        </div>
+        <!-- Classifier heading -->
+        <h2 class="classifier-heading">Sleep Stage Classifier</h2>
+        <!-- Form for file upload -->
+        <form class="form">
+            <div class="file-upload-wrapper" data-text="Select your file!">
+                Choose EDF File
+                <input name="file-upload-field" type="file" class="file-upload-field" value="">
+            </div>
+            <!-- Upload button -->
+            <button class="upload-button" type="button">Upload</button>
+            <!-- Preprocess button -->
+            <button class="preprocess-button" type="button">Preprocess</button>
+            <!-- Previous button -->
+            <button id="previous-button" type="button">Previous</button>
+            <!-- Error messages -->
+            <p id="file-error">No file chosen</p>
+            <p id="format-error">File should be in EDF format</p>
+        </form>
+        <!-- Toast message -->
+        <div id="toast-message" class="toast-message">File uploaded</div>
+    </div>
+<!-- JavaScript to handle navigation -->
+<script>
+    document.querySelector('.preprocess-button').addEventListener('click', function() {
+        var fileInput = document.querySelector('.file-upload-field');
+        var file = fileInput.files[0];
+        if (!file) {
+            document.getElementById('file-error').style.display = 'block';
+            document.getElementById('format-error').style.display = 'none';
+        } else if (!file.name.toLowerCase().endsWith('.edf')) {
+            document.getElementById('file-error').style.display = 'none';
+            document.getElementById('format-error').style.display = 'block';
+        } else {
+            // Send AJAX request to preprocess the file
+            var formData = new FormData();
+            formData.append('filename', file);
+            fetch('/preprocess', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    // Handle error
+                    alert(data.error);
+                } else {
+                    // Redirect to npz_process.html with npz_filename and x_values_first_10
+                    var npzFilename = data.npz_filename;
+                    var xValuesFirst10 = data.x_values_first_10;
+                    var queryString = '?npz_filename=' + npzFilename + '&x_values_first_10=' + JSON.stringify(xValuesFirst10);
+                    window.location.href = '/npz_process' + queryString;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+    // Function to handle upload button click
+    document.querySelector('.upload-button').addEventListener('click', function() {
+        var fileInput = document.querySelector('.file-upload-field');
+        var file = fileInput.files[0];
+        if (!file) {
+            document.getElementById('file-error').style.display = 'block';
+            document.getElementById('format-error').style.display = 'none';
+        } else if (!file.name.toLowerCase().endsWith('.edf')) {
+            document.getElementById('file-error').style.display = 'none';
+            document.getElementById('format-error').style.display = 'block';
+        } else {
+            // Show toast message
+            var toastMessage = document.getElementById('toast-message');
+            toastMessage.classList.add('show');
+
+            // Hide toast message after 3 seconds
+            setTimeout(function(){
+                toastMessage.classList.remove('show');
+            }, 3000);
+        }
+    });
+
+    // Function to handle upload button click
+    document.querySelector('.upload-button').addEventListener('click', function() {
+        var fileInput = document.querySelector('.file-upload-field');
+        var file = fileInput.files[0];
+        if (!file) {
+            document.getElementById('file-error').style.display = 'block';
+            document.getElementById('format-error').style.display = 'none';
+        } else if (!file.name.toLowerCase().endsWith('.edf')) {
+            document.getElementById('file-error').style.display = 'none';
+            document.getElementById('format-error').style.display = 'block';
+        } else {
+            // Show toast message
+            var toastMessage = document.getElementById('toast-message');
+            toastMessage.classList.add('show');
+
+            // Hide toast message after 3 seconds
+            setTimeout(function(){
+                toastMessage.classList.remove('show');
+            }, 3000);
+        }
+    });
+
+    // Function to handle previous button click
+    document.getElementById('previous-button').addEventListener('click', function() {
+        window.location.href = '/go_to_index'; // Redirect to index page
+    });
+</script>
+
+</body>
+</html>
