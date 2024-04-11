@@ -1,3 +1,5 @@
+<div style="background: linear-gradient(to bottom, #ff7e5f, #feb47b); padding: 20px; border-radius: 5px;">
+
 # Sleep Stage Classification
 
 ## Overview
@@ -9,8 +11,6 @@ The project utilizes a dataset containing sleep data collected from SleepEDF of 
 ## Methodology
 We employ machine learning algorithms such as DeepSleepNet, SleepEEGNet, AttnSleep to train models on the sleep data. Feature engineering techniques are utilized to extract relevant information from the raw sleep data. The trained models are then used for sleep stage classification.
 
-
-
 ## Dependencies
 - Python 3.11.5
 - NumPy
@@ -18,5 +18,7 @@ We employ machine learning algorithms such as DeepSleepNet, SleepEEGNet, AttnSle
 - TensorFlow
 - Keras
 - Scipy
+
+</div>
 
 
